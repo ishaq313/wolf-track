@@ -204,27 +204,27 @@ button.active{background:var(--blue)}
 <script>
 /* ================= CONFIG ================= */
 const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
-const ACTIVE_WINDOW = 15000; // 15 sec
-const seen = {}; // token => firstSeen
+let ADMIN_PASS = "";
 
-/* ================= LOGIN ================= */
-loginBtn.onclick = async ()=>{
-  loginStatus.innerHTML =
-   `<div class="loader"><div class="spinner"></div>Verifying…</div>`;
+function login(){
+  ADMIN_PASS = document.getElementById("pass").value.trim();
 
-  const r = await fetch(API+"/admin-login",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({password:pass.value})
+  fetch(API + "/get-all-locations", {
+    headers: {
+      "x-admin-password": ADMIN_PASS
+    }
+  })
+  .then(r=>{
+    if(r.status === 401){
+      alert("Invalid password");
+      throw "unauthorized";
+    }
+    return r.json();
+  })
+  .then(data=>{
+    console.log("ACCESS GRANTED", data);
   });
-
-  if(r.status===200){
-    loginCard.style.display="none";
-    adminCard.style.display="block";
-  }else{
-    loginStatus.textContent="❌ Invalid key";
-  }
-};
+}
 
 /* ================= GENERATE LINK ================= */
 function generate(){
