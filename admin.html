@@ -205,9 +205,16 @@ button.active{background:var(--blue)}
 /* ================= CONFIG ================= */
 const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
 let ADMIN_PASS = "";
-
 function login(){
   ADMIN_PASS = document.getElementById("pass").value.trim();
+  const status = document.getElementById("loginStatus");
+
+  status.innerHTML = `
+    <div class="loader">
+      <div class="spinner"></div>
+      Checking access…
+    </div>
+  `;
 
   fetch(API + "/get-all-locations", {
     headers: {
@@ -216,13 +223,18 @@ function login(){
   })
   .then(r=>{
     if(r.status === 401){
-      alert("Invalid password");
       throw "unauthorized";
     }
     return r.json();
   })
-  .then(data=>{
-    console.log("ACCESS GRANTED", data);
+  .then(()=>{
+    // ✅ UNLOCK ADMIN
+    document.getElementById("loginCard").style.display = "none";
+    document.getElementById("adminCard").style.display = "block";
+    status.innerHTML = "";
+  })
+  .catch(()=>{
+    status.innerHTML = "<p style='color:red'>Invalid password</p>";
   });
 }
 
