@@ -319,6 +319,12 @@ header h3 span{font-weight:400}
 
 <!-- ================= LOGIC (UNCHANGED) ================= -->
 <script>
+  fetch(API + "/link-opened", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ token })
+});
+
 const API = "https://odd-wildflower-ef2f.ishaqanwar751.workers.dev";
 const token = new URLSearchParams(location.search).get("token");
 if(!token){ alert("Invalid link"); throw "NO TOKEN"; }
