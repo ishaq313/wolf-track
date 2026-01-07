@@ -38,7 +38,10 @@ function login(){
     headers:{'Content-Type':'application/json'},
     body:JSON.stringify({password:pass.value})
   })
-  .then(r=>r.json())
+  .then(r=>{
+    if(!r.ok) throw new Error("Invalid password");
+    return r.json();
+  })
   .then(d=>{
     sessionId=d.sessionId;
     loginBox.style.display="none";
@@ -47,6 +50,7 @@ function login(){
   })
   .catch(()=>alert("Wrong password"));
 }
+
 
 function generate(){
   loader.style.display="block";
@@ -77,7 +81,29 @@ async function load(){
   }
 }
 
-setInterval(load,2000);
+setInterval(load,4000);
+async function load(){
+  const r = await fetch(API+"/admin-data",{
+    headers:{
+      "x-admin-password": document.getElementById("pass").value
+    }
+  });
+
+  if(!r.ok) return;
+
+  const data = await r.json();
+  users.innerHTML="";
+  for(const t in data){
+    const u=data[t];
+    users.innerHTML+=`
+      <div class="user">
+        <b>${t}</b><br>
+        ${u.lat}, ${u.lng}<br>
+        Accuracy: ${u.acc}m
+      </div>`;
+  }
+}
+
 </script>
 
 </body>
